@@ -9,14 +9,13 @@
 из этого репозитория.
 4. Установить и удалить deb-пакет с помощью dpkg.
 5. Выложить историю команд в терминале ubuntu
-[screensAndLog](https://github.com/Denowsky/My_final_examination_work2/blob/main/GBtasks/tasks with screens/History)
+[screensAndLog](GBtasks/tasks with screens/History)
 
 6. Нарисовать диаграмму, в которой есть класс родительский класс, домашние
 животные и вьючные животные, в составы которых в случае домашних
 животных войдут классы: собаки, кошки, хомяки, а в класс вьючные животные
 войдут: Лошади, верблюды и ослы.
 
-[диаграмма](https://github.com/Denowsky/My_final_examination_work2/blob/main/GBtasks/Diagramm/diagramm.drawio)
 ![JPEG](https://github.com/Denowsky/My_final_examination_work2/blob/main/GBtasks/Diagramm/diagramm.jpg)
 
 7. В подключенном MySQL репозитории создать базу данных “Друзья
