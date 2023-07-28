@@ -10,14 +10,18 @@ public class Counter implements AutoCloseable {
     }
 
     public void add() {
-        if(resourceClosed) {
-            throw new IllegalStateException("Ресурс уже закрыт");
+        if (resourceClosed) {
+            throw new IllegalStateException("Работа счётчика вне ресурса");
         }
         count++;
     }
 
     public int getCount() {
         return count;
+    }
+
+    public void setResourceClosed(boolean resourceClosed) {
+        this.resourceClosed = resourceClosed;
     }
 
     @Override
