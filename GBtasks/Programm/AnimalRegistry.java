@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Scanner;
+import Exception.Counter;
 
 class Animal {
     private String name;
@@ -40,31 +41,43 @@ public class AnimalRegistry {
         Scanner scanner = new Scanner(System.in, "UTF-8");
         int choice = 0;
 
-        while (choice != 4) {
+        while (choice != 5) {
             System.out.println("Выберите пункт меню:");
             System.out.println("1. Создать запись животного");
-            System.out.println("2. Посмотреть запись животного по индексу");
-            System.out.println("3. Обучить животное по индексу и добавить ему команды");
-            System.out.println("4. Выход");
+            System.out.println("2. Посмотреть все записи животных");
+            System.out.println("3. Посмотреть запись животного по номеру в списке");
+            System.out.println("4. Обучить животное по номеру в списке и добавить ему команды");
+            System.out.println("5. Выход");
 
             choice = scanner.nextInt();
-
-            switch (choice) {
-                case 1:
-                    createAnimal();
-                    break;
-                case 2:
-                    viewAnimal();
-                    break;
-                case 3:
-                    trainAnimal();
-                    break;
-                case 4:
-                    System.out.println("Выход из программы");
-                    break;
-                default:
-                    System.out.println("Неверный выбор");
-                    break;
+            try (Counter count = new Counter()) {
+                switch (choice) {
+                    case 1:
+                        createAnimal();
+                        count.add();
+                        break;
+                    case 2:
+                        viewAllList();
+                        break;
+                    case 3:
+                        viewAnimal();
+                        break;
+                    case 4:
+                        trainAnimal();
+                        break;
+                    case 5:
+                        System.out.println("Выход из программы");
+                        scanner.close();
+                        break;
+                    default:
+                        System.out.println("Неверный выбор");
+                        break;
+                }
+            if (count.getCount()>animals.size()){
+                throw new IllegalStateException("Неполные данные");
+            }
+            } catch(IllegalStateException e) {
+                System.out.println("Произошла ошибка: " + e.getMessage());
             }
         }
     }
@@ -73,53 +86,70 @@ public class AnimalRegistry {
         Scanner scanner = new Scanner(System.in, "UTF-8");
         System.out.println("Введите имя животного:");
         String name = scanner.nextLine();
-        String animalType = null;
-        System.out.println("Выберите тип животного (1 - кошка, 2 - собака, 3 - хомяк):");
-        int type = scanner.nextInt();
-        switch (type) {
-                        case 1:
-                            animalType = "Кошка";
-                            break;
-                        case 2:
-                            animalType = "Собака";
-                            break;
-                        case 3:
-                            animalType = "Хомяк";
-                            break;
-                        default:
-                            System.out.println("Неверный выбор");
-                            break;
-        }
-        ArrayList<String> commands = new ArrayList<>();
-        System.out.println("Введите команды, которые животное умеет выполнять (введите '-', чтобы закончить):");
-        String command = scanner.nextLine();
-        while (!command.equals("-")) {
-            command = scanner.nextLine();
-            if (!command.equals("-")) {
-                commands.add(command);
+        try {
+            if (name.equals("")) {
+                throw new Exception("Пустое имя");
             }
+            String animalType = null;
+            System.out.println("Выберите тип животного (1 - кошка, 2 - собака, 3 - хомяк):");
+            int type = scanner.nextInt();
+            switch (type) {
+                case 1:
+                    animalType = "Кошка";
+                    break;
+                case 2:
+                    animalType = "Собака";
+                    break;
+                case 3:
+                    animalType = "Хомяк";
+                    break;
+                default:
+                    throw new Exception("Неверный выбор");
+            }
+            ArrayList<String> commands = new ArrayList<>();
+            System.out.println("Введите команды, которые животное умеет выполнять (введите '-', чтобы закончить):");
+            String command = scanner.nextLine();
+            while (!command.equals("-")) {
+                command = scanner.nextLine();
+                if (!command.equals("-")) {
+                    commands.add(command);
+                }
+                if (commands.size() < 1) {
+                    throw new Exception("Не введены команды");
+                }
+            }
+
+            Animal animal = new Animal(name, animalType, commands);
+            animals.add(animal);
+
+            System.out.println("Запись животного успешно создана.");
+
+        } catch (Exception e) {
+            System.out.println("Ошибка: " + e.getMessage());
+            // scanner.close();
         }
-
-        Animal animal = new Animal(name, animalType, commands);
-        animals.add(animal);
-
-        System.out.println("Запись животного успешно создана.");
     }
 
-    private static void viewAllList(){
-        int counter = 1;
-        for (int i = 0; i < animals.size(); i++){
-            
+    private static void viewAllList() {
+        if (animals.size() < 1) {
+            System.out.println("Записей нет");
+        } else {
+            System.out.println("Список животных: ");
+            int counter = 1;
+            for (int i = 0; i < animals.size(); i++) {
+                System.out.println(counter + ". " + animals.get(i).getName());
+                counter++;
+            }
         }
     }
 
     private static void viewAnimal() {
         Scanner scanner = new Scanner(System.in, "UTF-8");
-        System.out.println("Введите индекс записи животного:");
+        System.out.println("Введите номер записи животного:");
         int index = scanner.nextInt();
 
-        if (index >= 0 && index < animals.size()) {
-            Animal animal = animals.get(index-1);
+        if (index >= 0 && index < animals.size() + 1) {
+            Animal animal = animals.get(index - 1);
             System.out.println("Имя: " + animal.getName());
             System.out.println("Тип животного: " + animal.getAnimalType());
             System.out.println("Команды: " + animal.getCommands());
@@ -130,11 +160,11 @@ public class AnimalRegistry {
 
     private static void trainAnimal() {
         Scanner scanner = new Scanner(System.in, "UTF-8");
-        System.out.println("Введите индекс записи животного:");
+        System.out.println("Введите номер записи животного:");
         int index = scanner.nextInt();
 
-        if (index >= 0 && index < animals.size()) {
-            Animal animal = animals.get(index);
+        if (index >= 0 && index < animals.size() + 1) {
+            Animal animal = animals.get(index - 1);
 
             ArrayList<String> newCommands = new ArrayList<>();
             System.out.println("Введите новые команды для обучения животного (введите '-', чтобы закончить):");
